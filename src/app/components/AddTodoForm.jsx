@@ -41,9 +41,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { addTodo } from "../actions/todos/getTodos";
+// import { addTodo } from "../actions/todos/getTodos";
 
-export default function AddTodoForm() {
+export default function AddTodoForm({ onAdd }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -61,7 +61,7 @@ export default function AddTodoForm() {
 
     const payload = {
       task: addtodo,
-      status: "incompleted",
+      status: "pending",
     };
 
     // const res = await fetch("/api/todos", {
@@ -75,7 +75,8 @@ export default function AddTodoForm() {
     //   }),
     // });
 
-    const result = await addTodo(payload);
+    // const result = await addTodo(payload);
+    const result = await onAdd(addtodo);
     console.log(result);
     form.reset();
     // router.push("/");

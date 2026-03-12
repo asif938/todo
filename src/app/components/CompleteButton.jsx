@@ -44,7 +44,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { completeTodo } from '../actions/todos/getTodos';
 
-const CompleteButton = ({ id }) => {
+const CompleteButton = ({ id, onComplete }) => {
     // const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +73,8 @@ const CompleteButton = ({ id }) => {
     return (
         <button
             // onClick={handleComplete}
-            onClick={() => completeTodo(id)}
+            // onClick={() => completeTodo(id)}
+            onClick={() => onComplete(id)}
             disabled={isLoading}
             className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200 disabled:opacity-50"
             title="Mark as completed"

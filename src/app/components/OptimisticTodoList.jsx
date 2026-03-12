@@ -2,27 +2,82 @@
 
 import { useOptimistic } from "react";
 import { deleteTodo } from "../actions/todos/getTodos";
+import { completeTodo } from "../actions/todos/getTodos";
+import { addTodo } from "../actions/todos/getTodos";
 import DeleteButton from "./DeleteButton";
 import CompleteButton from "./CompleteButton";
 import Link from "next/link";
+import AddTodoForm from "./AddTodoForm";
 
 const OptimisticTodoList = ({ todos }) => {
 
-    const [optimisticTodos, removeTodo] = useOptimistic(
+    const [optimisticTodos, updateOptimistic] = useOptimistic(
         todos,
-        (state, id) => state.filter(todo => todo._id !== id)
+        (state, action) => {
+            switch (action.type) {
+
+                case "add":
+                    return [action.todo, ...state];
+
+                case "delete":
+                    return state.filter(todo => todo._id !== action.id);
+
+                case "complete":
+                    return state.map(todo =>
+                        todo._id === action.id
+                            ? { ...todo, status: "completed" }
+                            : todo
+                    );
+
+                default:
+                    return state;
+            }
+        }
     );
 
     const handleDelete = async (id) => {
-        removeTodo(id); // instant UI update
-        await deleteTodo(id); // server action
+        updateOptimistic({ type: "delete", id }); // instant UI update
+        await deleteTodo(id);
     };
+
+
+
+    const handleComplete = async (id) => {
+
+        updateOptimistic({ type: "complete", id }); // instant UI update
+
+        await completeTodo(id); // update database
+    };
+
+
+
+    const handleAdd = async (task) => {
+
+        const tempTodo = {
+            _id: Date.now().toString(), // temporary id
+            task,
+            status: "pending"
+        };
+
+        // instantly add to UI
+        updateOptimistic({
+            type: "add",
+            todo: tempTodo
+        });
+
+        await addTodo({
+            task,
+            status: "pending"
+        }); // save in database
+    };
+
 
     const completedCount = optimisticTodos.filter(item => item.status === 'completed').length;
     const totalCount = optimisticTodos.length;
 
     return (
         <div className="space-y-6">
+            <AddTodoForm onAdd={handleAdd} />
             {/* Stats Section */}
             <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-indigo-50 rounded-xl p-4 text-center">
@@ -74,7 +129,7 @@ const OptimisticTodoList = ({ todos }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </Link>
-                                <CompleteButton id={item._id.toString()} />
+                                <CompleteButton id={item._id.toString()} onComplete={handleComplete} />
                                 <DeleteButton id={item._id.toString()} onDelete={handleDelete} />
                             </div>
                         </div>
