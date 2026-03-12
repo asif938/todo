@@ -40,22 +40,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 // import { addTodo } from "../actions/todos/getTodos";
 
 export default function AddTodoForm({ onAdd }) {
   const router = useRouter();
+  const inputref = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddTodo = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    // setIsSubmitting(false);
 
     const form = e.target;
     const addtodo = form.addtodo.value.trim();
 
     if (!addtodo) {
-      setIsSubmitting(false);
+      // setIsSubmitting(false);
       return;
     }
 
@@ -76,9 +77,11 @@ export default function AddTodoForm({ onAdd }) {
     // });
 
     // const result = await addTodo(payload);
-    const result = await onAdd(addtodo);
+    const result = onAdd(addtodo);
     console.log(result);
-    form.reset();
+    // form.reset();
+    inputref.current.value = "";
+    inputref.current.focus();
     // router.push("/");
 
 
@@ -86,7 +89,7 @@ export default function AddTodoForm({ onAdd }) {
     //   form.reset();
     //   router.refresh();
     // }
-    setIsSubmitting(false);
+    // setIsSubmitting(false);
   };
 
   return (
@@ -95,6 +98,7 @@ export default function AddTodoForm({ onAdd }) {
         <input
           type="text"
           name="addtodo"
+          ref={inputref}
           placeholder="What needs to be done?"
           className="w-full px-5 py-4 pr-32 text-gray-700 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 transition-all duration-200"
           disabled={isSubmitting}

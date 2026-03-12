@@ -119,7 +119,7 @@ const OptimisticTodoList = ({ todos }) => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <div className="flex items-center gap-2 opacity-100 group-hover:opacity-100 transition-opacity duration-200">
                                 <Link
                                     href={`/todos/${item._id.toString()}`}
                                     className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
